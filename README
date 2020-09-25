@@ -1,0 +1,21 @@
+## redis-pipeline
+
+我们都知道大批量有规律的redis写操作，用pipeline模式能够极大提高效率。
+在Java开发中，SpringBoot对Redis做了很好的支持，可以支持Jedis和Lettuce，但在业务层可以通过RedisTemplate来屏蔽这些底层细节。
+那么基于RedisTemplate的pipeline性能怎样呢？
+
+## Data
+
+[Performance.java](src/main/java/com/example/demoredispipeline/Performance.java)中
+对RedisTemplate不采用pipeline模式，在pipeline模式下分别基于template和connection方式进行了测试，最后加上了Jedis pipeline。
+
+数据如下：
+
+ * cost 74529243 ns in jedis pipeline
+ * cost 4006613513 ns in normal mode
+ * cost 3726327129 ns in pipeline
+ * cost 252239947 ns in bytes pipeline
+
+ 可见，如果要用pipeline，基于原生的Jedis Pipeline性能会最好，如果是在Spring的RedisTemplate下，应该用connection来操作。
+ 如果不用connection操作，而是基于RedisTemplate，实际上是没有什么效果的。
+ 不要用错了方法哦。
